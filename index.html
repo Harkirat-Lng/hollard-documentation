@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hollard Money - Platform Documentation</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #0075c9 0%, #004d84 100%);
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        .hero h1 span { font-weight: 700; }
+        .hero p {
+            font-size: 1.3em;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+        
+        /* Section Styling */
+        section { margin-bottom: 60px; }
+        h2 {
+            color: #0075c9;
+            font-size: 2em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #0075c9;
+        }
+        h3 {
+            color: #004d84;
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+        }
+        p { margin-bottom: 20px; }
+        
+        /* Problem Statement */
+        .problem-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+            border-left: 5px solid #e74c3c;
+            padding: 30px;
+            border-radius: 0 10px 10px 0;
+            margin: 30px 0;
+        }
+        .problem-box h3 { color: #c0392b; margin-top: 0; }
+        
+        /* Solution Box */
+        .solution-box {
+            background: linear-gradient(135deg, #f0fff4 0%, #fff 100%);
+            border-left: 5px solid #27ae60;
+            padding: 30px;
+            border-radius: 0 10px 10px 0;
+            margin: 30px 0;
+        }
+        .solution-box h3 { color: #1e8449; margin-top: 0; }
+        
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0075c9, #004d84);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        .feature-card h4 {
+            color: #0075c9;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        .feature-card p {
+            color: #666;
+            margin-bottom: 0;
+        }
+        
+        /* Platform Overview */
+        .platform-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 40px 0;
+        }
+        @media (max-width: 900px) {
+            .platform-cards { grid-template-columns: 1fr; }
+        }
+        .platform-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .platform-header {
+            padding: 25px;
+            color: white;
+            text-align: center;
+        }
+        .platform-header.consumer { background: linear-gradient(135deg, #27ae60, #1e8449); }
+        .platform-header.agent { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .platform-header.ops { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .platform-header h4 {
+            font-size: 1.3em;
+            margin-bottom: 5px;
+        }
+        .platform-header p {
+            opacity: 0.9;
+            font-size: 0.9em;
+            margin: 0;
+        }
+        .platform-body {
+            padding: 25px;
+        }
+        .platform-body ul {
+            list-style: none;
+        }
+        .platform-body li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            padding-left: 25px;
+            position: relative;
+        }
+        .platform-body li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .platform-body li:last-child { border-bottom: none; }
+        
+        /* Stats */
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin: 50px 0;
+            flex-wrap: wrap;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 3em;
+            font-weight: 700;
+            color: #0075c9;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        /* Partners */
+        .partners {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .partners h3 { margin-bottom: 30px; }
+        .partner-list {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .partner {
+            padding: 15px 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        /* Journey */
+        .journey-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            position: relative;
+        }
+        .journey-steps:before {
+            content: "";
+            position: absolute;
+            top: 35px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #0075c9;
+        }
+        @media (max-width: 768px) {
+            .journey-steps {
+                flex-direction: column;
+                gap: 30px;
+            }
+            .journey-steps:before {
+                display: none;
+            }
+        }
+        .journey-step {
+            text-align: center;
+            position: relative;
+            flex: 1;
+        }
+        .step-number {
+            width: 70px;
+            height: 70px;
+            background: #0075c9;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .journey-step h4 {
+            color: #0075c9;
+            margin-bottom: 10px;
+        }
+        .journey-step p {
+            color: #666;
+            font-size: 0.95em;
+            padding: 0 10px;
+        }
+        
+        /* Footer */
+        footer {
+            background: #1a1a2e;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        footer p { color: rgba(255,255,255,0.7); margin-bottom: 10px; }
+        
+        /* Document Links */
+        .doc-links {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .doc-links h3 { margin-bottom: 25px; }
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .doc-link {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+        .doc-link:hover {
+            background: #0075c9;
+            color: white;
+        }
+        .doc-link-icon {
+            width: 45px;
+            height: 45px;
+            background: #0075c9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.3em;
+        }
+        .doc-link:hover .doc-link-icon {
+            background: rgba(255,255,255,0.2);
+        }
+        .doc-link-text h5 { margin-bottom: 3px; }
+        .doc-link-text p { font-size: 0.85em; opacity: 0.8; margin: 0; }
+
+        /* Print styles */
+        @media print {
+            .hero { padding: 40px; }
+            .feature-card, .platform-card { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <h1>Hollard <span>Money</span></h1>
+        <p>Empowering South Africans to take control of their financial future through personalised credit insights, expert guidance, and tailored financial solutions.</p>
+        <div class="hero-badge">A Hollard Insurance Digital Platform</div>
+    </header>
+
+    <div class="container">
+        <!-- Introduction -->
+        <section>
+            <h2>About Hollard Money</h2>
+            <p>Hollard Money is a comprehensive digital platform designed to help everyday South Africans understand, monitor, and improve their credit health. In partnership with leading financial institutions, we provide consumers with free access to their credit information, actionable insights, and a pathway to better financial wellbeing.</p>
+            
+            <div class="problem-box">
+                <h3>The Challenge We Address</h3>
+                <p>Many South Africans struggle with understanding their credit profile and how it impacts their financial opportunities. Without easy access to credit information and guidance, consumers often make uninformed financial decisions, leading to over-indebtedness, declined applications, and missed opportunities for better financial products.</p>
+            </div>
+            
+            <div class="solution-box">
+                <h3>Our Solution</h3>
+                <p>Hollard Money bridges this gap by providing a free, easy-to-use platform where consumers can view their credit score, understand the factors affecting it, receive personalised coaching, and connect with suitable financial products—all supported by dedicated credit coaches who guide users on their financial journey.</p>
+            </div>
+        </section>
+
+        <!-- Key Features -->
+        <section>
+            <h2>What We Offer</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h4>Free Credit Dashboard</h4>
+                    <p>Access your credit score and detailed credit report at no cost. See a complete picture of your credit accounts, payment history, and financial standing.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h4>Credit Insights</h4>
+                    <p>Understand the key factors affecting your credit score. Receive personalised recommendations on how to improve your financial health.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h4>Personal Credit Coach</h4>
+                    <p>Get guidance from dedicated credit coaches who help you understand your options and connect you with the right financial solutions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h4>Tailored Products</h4>
+                    <p>Browse financial products suited to your profile—from personal loans and credit cards to vehicle finance and debt consolidation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h4>Progress Tracking</h4>
+                    <p>Monitor your credit score history over time and see how your financial decisions impact your overall credit wellness.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h4>Secure & Confidential</h4>
+                    <p>Your personal information is protected with enterprise-grade security. We take privacy seriously and never share your data without consent.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Journey -->
+        <section>
+            <h2>Your Journey with Money</h2>
+            <div class="journey-steps">
+                <div class="journey-step">
+                    <div class="step-number">1</div>
+                    <h4>Register</h4>
+                    <p>Sign up with your South African ID number to create your secure account</p>
+                </div>
+                <div class="journey-step">
+                    <div class="step-number">2</div>
+                    <h4>View Your Score</h4>
+                    <p>Access your credit report pulled directly from the credit bureau</p>
+                </div>
+                <div class="journey-step">
+                    <div class="step-number">3</div>
+                    <h4>Get Insights</h4>
+                    <p>Understand what factors are helping or hurting your credit score</p>
+                </div>
+                <div class="journey-step">
+                    <div class="step-number">4</div>
+                    <h4>Take Action</h4>
+                    <p>Connect with coaches and explore financial products suited to you</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Platform Overview -->
+        <section>
+            <h2>Platform Components</h2>
+            <p>The Money ecosystem consists of three integrated applications working together to deliver a seamless experience for consumers and operations teams.</p>
+            
+            <div class="platform-cards">
+                <div class="platform-card">
+                    <div class="platform-header consumer">
+                        <h4>Consumer Portal</h4>
+                        <p>For Everyday Users</p>
+                    </div>
+                    <div class="platform-body">
+                        <ul>
+                            <li>View credit score and report</li>
+                            <li>Track credit health over time</li>
+                            <li>Receive personalised insights</li>
+                            <li>Browse suitable financial products</li>
+                            <li>Complete financial surveys</li>
+                            <li>Set financial goals</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="platform-card">
+                    <div class="platform-header agent">
+                        <h4>Coach Portal</h4>
+                        <p>For Credit Coaches</p>
+                    </div>
+                    <div class="platform-body">
+                        <ul>
+                            <li>View and manage user profiles</li>
+                            <li>Update credit reports from bureau</li>
+                            <li>Connect users with partners</li>
+                            <li>Track user journeys and campaigns</li>
+                            <li>Manage user activations</li>
+                            <li>Customise user experiences</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="platform-card">
+                    <div class="platform-header ops">
+                        <h4>Operations Hub</h4>
+                        <p>For Operational Teams</p>
+                    </div>
+                    <div class="platform-body">
+                        <ul>
+                            <li>Audit logging and compliance</li>
+                            <li>Track coach-client interactions</li>
+                            <li>Monitor communication history</li>
+                            <li>User activity reporting</li>
+                            <li>Sign-in history tracking</li>
+                            <li>Operational analytics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partners -->
+        <section>
+            <div class="partners">
+                <h3>Our Financial Partners</h3>
+                <p style="margin-bottom: 30px;">We work with trusted financial service providers to offer you the best solutions for your needs.</p>
+                <div class="partner-list">
+                    <div class="partner">Sanlam Personal Loans</div>
+                    <div class="partner">Ooba Home Loans</div>
+                    <div class="partner">DebtBusters</div>
+                    <div class="partner">Mobicred</div>
+                    <div class="partner">Nedbank</div>
+                    <div class="partner">Truworths</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Value Proposition -->
+        <section>
+            <h2>Why Hollard Money?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Free Forever</h4>
+                    <p>Access your credit information at no cost, ever. We believe financial literacy should be accessible to everyone.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Human Support</h4>
+                    <p>Real credit coaches are available to guide you—not just automated responses. Get personalised advice when you need it.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>South African Focus</h4>
+                    <p>Built specifically for South African consumers, with local credit bureaus and financial products relevant to your needs.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation -->
+        <section>
+            <h2>Documentation Resources</h2>
+            <div class="doc-links">
+                <h3>Available Documentation</h3>
+                <div class="doc-grid">
+                    <a href="database-mindmap.html" class="doc-link">
+                        <div class="doc-link-icon">🗄️</div>
+                        <div class="doc-link-text">
+                            <h5>Database Schema</h5>
+                            <p>Interactive database structure overview</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p><strong>Hollard Money</strong></p>
+        <p>A product of Hollard Insurance Company Ltd</p>
+        <p>Sanlam is an authorised Financial Services Provider (FSP7249)</p>
+        <p style="margin-top: 20px; font-size: 0.9em;">Documentation generated on June 2026</p>
+    </footer>
+</body>
+</html>
