@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Journey Customization - Interactive Feature Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #00d9ff;
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(0, 217, 255, 0.5); }
+            to { text-shadow: 0 0 20px rgba(0, 217, 255, 0.8), 0 0 30px rgba(0, 217, 255, 0.4); }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        
+        .diagram-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Zoom Controls */
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+            color: #00d9ff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .zoom-btn:hover {
+            background: rgba(0, 217, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .zoom-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .zoom-level {
+            color: #00d9ff;
+            font-size: 12px;
+            min-width: 45px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Zoomable Diagram Wrapper */
+        .diagram-wrapper {
+            overflow: hidden;
+            cursor: grab;
+            border-radius: 10px;
+            min-height: 400px;
+            position: relative;
+        }
+        
+        .diagram-wrapper:active {
+            cursor: grabbing;
+        }
+        
+        .diagram-inner {
+            transform-origin: center center;
+            transition: transform 0.1s ease-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+        
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .mermaid svg {
+            max-width: none !important;
+        }
+        
+        /* Fullscreen button */
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+        }
+        
+        .diagram-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: 0;
+            border-radius: 0;
+            z-index: 9999;
+            padding: 60px 20px 20px;
+        }
+        
+        .diagram-container.fullscreen .diagram-wrapper {
+            height: calc(100vh - 100px);
+        }
+        
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 217, 255, 0.3);
+            border-color: #00d9ff;
+        }
+        
+        .feature-card.expanded {
+            grid-column: 1 / -1;
+        }
+        
+        .feature-card h3 {
+            color: #00d9ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: space-between;
+        }
+        
+        .feature-card h3 .title-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-card h3 .icon {
+            font-size: 1.5rem;
+        }
+        
+        .expand-icon {
+            transition: transform 0.3s;
+            font-size: 1.2rem;
+        }
+        
+        .feature-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        .feature-card ul {
+            list-style: none;
+            padding-left: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        
+        .feature-card.expanded ul {
+            max-height: 1000px;
+        }
+        
+        .feature-card ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #d0d0d0;
+            transition: all 0.2s;
+        }
+        
+        .feature-card ul li:hover {
+            color: #fff;
+            padding-left: 10px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 5px;
+        }
+        
+        .feature-card ul li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-card ul li::before {
+            content: '→';
+            color: #00d9ff;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .feature-card ul li:hover::before {
+            transform: translateX(5px);
+        }
+        
+        .tab-overview { border-left: 4px solid #4CAF50; }
+        .tab-journeys { border-left: 4px solid #2196F3; }
+        .tab-banners { border-left: 4px solid #FF9800; }
+        .tab-recycle { border-left: 4px solid #9C27B0; }
+        
+        .workflow-section {
+            margin-top: 40px;
+        }
+        
+        .workflow-section h2 {
+            text-align: center;
+            color: #00d9ff;
+            margin-bottom: 20px;
+        }
+        
+        /* Collapsible Sections */
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 15px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .collapsible-header:hover {
+            background: rgba(0, 217, 255, 0.2);
+        }
+        
+        .collapsible-header h2 {
+            margin: 0;
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        
+        .collapsible-content.open {
+            max-height: 2000px;
+        }
+        
+        .toggle-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .collapsible-header.open .toggle-icon {
+            transform: rotate(45deg);
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .legend-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+        
+        .legend-item.active {
+            background: rgba(0, 217, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            transition: transform 0.3s;
+        }
+        
+        .legend-item:hover .legend-color {
+            transform: scale(1.2);
+        }
+        
+        .legend-color.overview { background: #4CAF50; }
+        .legend-color.journeys { background: #2196F3; }
+        .legend-color.banners { background: #FF9800; }
+        .legend-color.recycle { background: #9C27B0; }
+        
+        .access-info {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .access-info h4 {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .badge-admin { background: #4CAF50; color: white; }
+        .badge-marketing { background: #2196F3; color: white; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #00d9ff;
+            box-shadow: 0 0 50px rgba(0, 217, 255, 0.3);
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-header h3 {
+            color: #00d9ff;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 0, 0, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            color: #d0d0d0;
+            line-height: 1.8;
+        }
+        
+        .modal-body ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .modal-body ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .modal-body ul li::before {
+            content: '✓ ';
+            color: #4CAF50;
+        }
+        
+        /* Tooltip */
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip-text {
+            visibility: hidden;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid #00d9ff;
+        }
+        
+        .tooltip-wrapper:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Instructions Panel */
+        .instructions-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid #00d9ff;
+            z-index: 1000;
+            max-width: 300px;
+            animation: slideInRight 0.5s;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .instructions-panel h4 {
+            color: #00d9ff;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .instructions-panel ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+        
+        .instructions-panel ul li {
+            padding: 4px 0;
+        }
+        
+        .instructions-panel .close-instructions {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.5rem; }
+            .feature-cards { grid-template-columns: 1fr; }
+            .instructions-panel { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 User Journey Customization</h1>
+        <p class="subtitle">Interactive Feature Map - Hollard Agent UI Dashboard <span style="color: #00d9ff;">| Click cards to expand • Use zoom controls on diagrams</span></p>
+        
+        <div class="access-info">
+            <h4>🔐 Access Roles</h4>
+            <p>This feature is available to users with the following roles:</p>
+            <span class="badge badge-admin tooltip-wrapper" onclick="showModal('admin')">
+                Admin
+                <span class="tooltip-text">Full access to all features</span>
+            </span>
+            <span class="badge badge-marketing tooltip-wrapper" onclick="showModal('marketing')">
+                Marketing
+                <span class="tooltip-text">Access to campaign management</span>
+            </span>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item" onclick="highlightCards('overview')" data-tab="overview">
+                <div class="legend-color overview"></div>
+                <span>Overview Tab</span>
+            </div>
+            <div class="legend-item" onclick="highlightCards('journeys')" data-tab="journeys">
+                <div class="legend-color journeys"></div>
+                <span>User Journeys Tab</span>
+            </div>
+            <div class="legend-item" onclick="highlightCards('banners')" data-tab="banners">
+                <div class="legend-color banners"></div>
+                <span>Leaderboard Banner Tab</span>
+            </div>
+            <div class="legend-item" onclick="highlightCards('recycle')" data-tab="recycle">
+                <div class="legend-color recycle"></div>
+                <span>Recycle Bin Tab</span>
+            </div>
+        </div>
+        
+        <div class="diagram-container" id="main-diagram">
+            <div class="zoom-controls">
+                <button class="zoom-btn fullscreen-btn" onclick="toggleFullscreen('main-diagram')" title="Fullscreen">⛶</button>
+                <button class="zoom-btn" onclick="zoomDiagram('main-diagram', -0.1)" title="Zoom Out">−</button>
+                <span class="zoom-level" id="zoom-main-diagram">100%</span>
+                <button class="zoom-btn" onclick="zoomDiagram('main-diagram', 0.1)" title="Zoom In">+</button>
+                <button class="zoom-btn" onclick="resetZoom('main-diagram')" title="Reset">↺</button>
+            </div>
+            <div class="diagram-wrapper" id="wrapper-main-diagram">
+                <div class="diagram-inner" id="inner-main-diagram">
+                    <div class="mermaid" id="mermaid-main">
+flowchart TB
+    subgraph MAIN["🎯 User Journey Customization"]
+        BTN["📌 User Journey Customization Button<br/><i>Dashboard Panel</i>"]
+    end
+    
+    BTN --> TABS
+    
+    subgraph TABS["📑 Main Navigation Tabs"]
+        T1["📊 Overview"]
+        T2["🛤️ Manage User Journeys"]
+        T3["🏆 Manage Leaderboard Banner"]
+        T4["🗑️ Recycle Bin"]
+    end
+    
+    T1 --> OV_ACTIONS
+    T1 --> OV_ACCORDIONS
+    
+    subgraph OV_ACTIONS["🚀 Quick Actions"]
+        OV_A1["➕ Create New User Journey"]
+        OV_A2["➕ Create LeaderBoard Banner"]
+    end
+    
+    subgraph OV_ACCORDIONS["📁 View Data"]
+        OV_ACC1["📋 User Journeys List"]
+        OV_ACC2["📋 Banners List"]
+    end
+    
+    OV_ACC1 --> OV_J_ACTIONS["✏️ Edit | 🗑️ Delete"]
+    OV_ACC2 --> OV_B_ACTIONS["✏️ Edit | 👁️ Preview | 🗑️ Delete"]
+    
+    T2 --> UJ_FORM
+    
+    subgraph UJ_FORM["📝 User Journey Form"]
+        UJ_F1["📛 Journey Name"]
+        UJ_F2["🔗 Campaign UTM ID"]
+        UJ_F3["📅 Campaign Dates"]
+        UJ_F4["📂 Campaign Category"]
+        UJ_F5["🎨 Elements to Customize"]
+        UJ_F6["🏷️ Banner Selection"]
+    end
+    
+    UJ_F3 --> UJ_DATES["📆 Begin Date<br/>📆 End Date<br/>☑️ No End Date Option"]
+    UJ_F5 --> UJ_ELEMENTS["🖼️ Landing Page <i>(disabled)</i><br/>🔐 Login Page <i>(disabled)</i>"]
+    UJ_F6 --> UJ_BANNER_OPT["⭕ No Banner<br/>📎 Add Existing Banner<br/>➕ Add New Banner"]
+    UJ_FORM --> UJ_SUBMIT["💾 Save and Publish"]
+    
+    T3 --> LB_FORM
+    
+    subgraph LB_FORM["🏆 Leaderboard Banner Form"]
+        LB_F1["📛 Banner Name"]
+        LB_F2["📰 Banner Heading"]
+        LB_F3["📝 Banner Content <i>(CKEditor)</i>"]
+        LB_F4["🔘 Button CTA"]
+    end
+    
+    LB_F4 --> LB_BTN_CONFIG["📝 Button Text<br/>🎯 Button Action"]
+    LB_BTN_CONFIG --> LB_BTN_ACTIONS["🔀 Redirect On-Platform<br/>🌐 Redirect Off-Platform<br/>📦 Product Tile Selection"]
+    LB_FORM --> LB_ACTIONS["👁️ Preview | 💾 Save and Publish"]
+    
+    T4 --> RB_SECTIONS
+    
+    subgraph RB_SECTIONS["🗑️ Deleted Items"]
+        RB_S1["📋 Recycle Bin User Journeys"]
+        RB_S2["📋 Recycle Bin Banners"]
+    end
+
+    style MAIN fill:#1a1a2e,stroke:#00d9ff,stroke-width:2px,color:#fff
+    style TABS fill:#16213e,stroke:#00d9ff,stroke-width:1px
+    style OV_ACTIONS fill:#1b4332,stroke:#4CAF50,stroke-width:1px
+    style OV_ACCORDIONS fill:#1b4332,stroke:#4CAF50,stroke-width:1px
+    style UJ_FORM fill:#0d3b66,stroke:#2196F3,stroke-width:1px
+    style LB_FORM fill:#3d2314,stroke:#FF9800,stroke-width:1px
+    style RB_SECTIONS fill:#2d1b4e,stroke:#9C27B0,stroke-width:1px
+    
+    style T1 fill:#4CAF50,stroke:#fff,color:#fff
+    style T2 fill:#2196F3,stroke:#fff,color:#fff
+    style T3 fill:#FF9800,stroke:#fff,color:#000
+    style T4 fill:#9C27B0,stroke:#fff,color:#fff
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 style="text-align: center; color: #00d9ff; margin-bottom: 20px;">📋 Feature Details by Tab <span style="font-size: 0.8rem; color: #a0a0a0;">(Click to expand)</span></h2>
+        
+        <div class="feature-cards">
+            <div class="feature-card tab-overview" onclick="toggleCard(this)" data-card="overview">
+                <h3>
+                    <span class="title-section"><span class="icon">📊</span> Overview Tab</span>
+                    <span class="expand-icon">▼</span>
+                </h3>
+                <ul>
+                    <li>Quick access to create new User Journey</li>
+                    <li>Quick access to create new Leaderboard Banner</li>
+                    <li>View all active User Journeys in accordion</li>
+                    <li>View all active Banners in accordion</li>
+                    <li>Edit existing User Journeys</li>
+                    <li>Delete User Journeys (moves to recycle bin)</li>
+                    <li>Edit existing Banners</li>
+                    <li>Preview Banners before publishing</li>
+                    <li>Delete Banners (moves to recycle bin)</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card tab-journeys" onclick="toggleCard(this)" data-card="journeys">
+                <h3>
+                    <span class="title-section"><span class="icon">🛤️</span> Manage User Journeys Tab</span>
+                    <span class="expand-icon">▼</span>
+                </h3>
+                <ul>
+                    <li>Set User Journey Name (internal identification)</li>
+                    <li>Define Campaign UTM ID (for tracking URLs)</li>
+                    <li>Configure Begin Date with date picker</li>
+                    <li>Configure End Date with date picker</li>
+                    <li>Option for "No End Date" campaigns</li>
+                    <li>Select Campaign Category from dropdown</li>
+                    <li>Customize Landing Page (future feature)</li>
+                    <li>Customize Login Page (future feature)</li>
+                    <li>Choose: No Banner / Existing Banner / New Banner</li>
+                    <li>Save and Publish journey</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card tab-banners" onclick="toggleCard(this)" data-card="banners">
+                <h3>
+                    <span class="title-section"><span class="icon">🏆</span> Manage Leaderboard Banner Tab</span>
+                    <span class="expand-icon">▼</span>
+                </h3>
+                <ul>
+                    <li>Set Banner Name (internal identification)</li>
+                    <li>Configure Banner Heading (visible to users)</li>
+                    <li>Rich text Banner Content with CKEditor</li>
+                    <li>Set Button Text (CTA text)</li>
+                    <li>Configure Button Action:</li>
+                    <li style="padding-left: 20px;">• Redirect to on-platform page</li>
+                    <li style="padding-left: 20px;">• Redirect to off-platform URL</li>
+                    <li style="padding-left: 20px;">• Link to specific Product Tile</li>
+                    <li>Preview banner before publishing</li>
+                    <li>Save and Publish banner</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card tab-recycle" onclick="toggleCard(this)" data-card="recycle">
+                <h3>
+                    <span class="title-section"><span class="icon">🗑️</span> Recycle Bin Tab</span>
+                    <span class="expand-icon">▼</span>
+                </h3>
+                <ul>
+                    <li>View deleted/inactive User Journeys</li>
+                    <li>View ended campaigns</li>
+                    <li>View deleted/inactive Leaderboard Banners</li>
+                    <li>Review past campaign details</li>
+                    <li>Historical record keeping</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="workflow-section">
+            <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                <h2>🔄 Workflow Diagram</h2>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="diagram-container" id="workflow-diagram">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" onclick="toggleFullscreen('workflow-diagram')" title="Fullscreen">⛶</button>
+                        <button class="zoom-btn" onclick="zoomDiagram('workflow-diagram', -0.1)" title="Zoom Out">−</button>
+                        <span class="zoom-level" id="zoom-workflow-diagram">100%</span>
+                        <button class="zoom-btn" onclick="zoomDiagram('workflow-diagram', 0.1)" title="Zoom In">+</button>
+                        <button class="zoom-btn" onclick="resetZoom('workflow-diagram')" title="Reset">↺</button>
+                    </div>
+                    <div class="diagram-wrapper" id="wrapper-workflow-diagram">
+                        <div class="diagram-inner" id="inner-workflow-diagram">
+                            <div class="mermaid" id="mermaid-workflow">
+flowchart LR
+    subgraph CREATE["📝 Creation Flow"]
+        direction TB
+        C1["Create User Journey"]
+        C2["Define Campaign Details"]
+        C3["Set Dates & Category"]
+        C4["Select/Create Banner"]
+        C5["Save & Publish"]
+        C1 --> C2 --> C3 --> C4 --> C5
+    end
+    
+    subgraph BANNER["🏆 Banner Flow"]
+        direction TB
+        B1["Create Banner"]
+        B2["Add Heading & Content"]
+        B3["Configure CTA Button"]
+        B4["Set Redirect Action"]
+        B5["Preview & Publish"]
+        B1 --> B2 --> B3 --> B4 --> B5
+    end
+    
+    subgraph MANAGE["⚙️ Management"]
+        direction TB
+        M1["View Active Items"]
+        M2["Edit/Update"]
+        M3["Delete → Recycle Bin"]
+        M1 --> M2
+        M1 --> M3
+    end
+    
+    CREATE --> MANAGE
+    BANNER --> CREATE
+    
+    style CREATE fill:#0d3b66,stroke:#2196F3,stroke-width:2px
+    style BANNER fill:#3d2314,stroke:#FF9800,stroke-width:2px
+    style MANAGE fill:#1b4332,stroke:#4CAF50,stroke-width:2px
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="workflow-section">
+            <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                <h2>🎯 Button Redirect Options</h2>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="diagram-container" id="redirect-diagram">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" onclick="toggleFullscreen('redirect-diagram')" title="Fullscreen">⛶</button>
+                        <button class="zoom-btn" onclick="zoomDiagram('redirect-diagram', -0.1)" title="Zoom Out">−</button>
+                        <span class="zoom-level" id="zoom-redirect-diagram">100%</span>
+                        <button class="zoom-btn" onclick="zoomDiagram('redirect-diagram', 0.1)" title="Zoom In">+</button>
+                        <button class="zoom-btn" onclick="resetZoom('redirect-diagram')" title="Reset">↺</button>
+                    </div>
+                    <div class="diagram-wrapper" id="wrapper-redirect-diagram">
+                        <div class="diagram-inner" id="inner-redirect-diagram">
+                            <div class="mermaid" id="mermaid-redirect">
+flowchart TB
+    BTN["🔘 Banner Button (CTA)"]
+    
+    BTN --> |"On-Platform"| ON_PLATFORM
+    BTN --> |"Off-Platform"| OFF_PLATFORM
+    
+    subgraph ON_PLATFORM["📱 On-Platform Redirects"]
+        OP1["/portal/dashboard"]
+        OP2["/portal/profile"]
+        OP3["/portal/account"]
+    end
+    
+    subgraph OFF_PLATFORM["🌐 Off-Platform"]
+        OFF1["Custom External URL"]
+    end
+    
+    ON_PLATFORM --> PRODUCT["📦 Product Tile Selection"]
+    
+    style BTN fill:#FF9800,stroke:#fff,stroke-width:2px,color:#000
+    style ON_PLATFORM fill:#2196F3,stroke:#fff
+    style OFF_PLATFORM fill:#9C27B0,stroke:#fff
+    style PRODUCT fill:#4CAF50,stroke:#fff
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="workflow-section">
+            <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                <h2>📋 Campaign Categories</h2>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="diagram-container" id="category-diagram" style="text-align: center; padding: 40px;">
+                    <p style="color: #a0a0a0; margin-bottom: 20px;">Campaign categories are dynamically loaded from the backend and used for reporting purposes.</p>
+                    <div class="mermaid" id="mermaid-category">
+pie showData
+    title Campaign Category Distribution (Example)
+    "Marketing Campaigns" : 40
+    "Product Launches" : 25
+    "Seasonal Offers" : 20
+    "Partner Campaigns" : 15
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Role Details</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Instructions Panel -->
+    <div class="instructions-panel" id="instructions">
+        <button class="close-instructions" onclick="document.getElementById('instructions').style.display='none'">×</button>
+        <h4>💡 How to interact</h4>
+        <ul>
+            <li>🔍 Use +/- buttons to zoom diagrams</li>
+            <li>⛶ Click fullscreen for detailed view</li>
+            <li>👆 Click cards to expand details</li>
+            <li>🎨 Click legend to highlight tabs</li>
+            <li>📑 Click headers to collapse sections</li>
+            <li>🖱️ Drag to pan zoomed diagrams</li>
+        </ul>
+    </div>
+    
+    <script>
+        // Mermaid initialization
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            themeVariables: {
+                primaryColor: '#00d9ff',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#00d9ff',
+                lineColor: '#00d9ff',
+                secondaryColor: '#16213e',
+                tertiaryColor: '#1a1a2e',
+                background: '#1a1a2e',
+                mainBkg: '#16213e',
+                nodeBorder: '#00d9ff',
+                clusterBkg: 'rgba(0,217,255,0.1)',
+                clusterBorder: '#00d9ff',
+                titleColor: '#00d9ff',
+                edgeLabelBackground: '#16213e'
+            }
+        });
+
+        // Zoom state for each diagram
+        const zoomStates = {
+            'main-diagram': { scale: 1, translateX: 0, translateY: 0 },
+            'workflow-diagram': { scale: 1, translateX: 0, translateY: 0 },
+            'redirect-diagram': { scale: 1, translateX: 0, translateY: 0 }
+        };
+        
+        // Zoom function
+        function zoomDiagram(diagramId, delta) {
+            if (!zoomStates[diagramId]) {
+                zoomStates[diagramId] = { scale: 1, translateX: 0, translateY: 0 };
+            }
+            
+            const state = zoomStates[diagramId];
+            const newScale = Math.max(0.5, Math.min(3, state.scale + delta));
+            state.scale = newScale;
+            
+            applyTransform(diagramId);
+            updateZoomDisplay(diagramId);
+        }
+        
+        // Reset zoom
+        function resetZoom(diagramId) {
+            zoomStates[diagramId] = { scale: 1, translateX: 0, translateY: 0 };
+            applyTransform(diagramId);
+            updateZoomDisplay(diagramId);
+        }
+        
+        // Apply transform
+        function applyTransform(diagramId) {
+            const state = zoomStates[diagramId];
+            const inner = document.getElementById(`inner-${diagramId}`);
+            if (inner) {
+                inner.style.transform = `translate(${state.translateX}px, ${state.translateY}px) scale(${state.scale})`;
+            }
+        }
+        
+        // Update zoom display
+        function updateZoomDisplay(diagramId) {
+            const display = document.getElementById(`zoom-${diagramId}`);
+            if (display) {
+                display.textContent = Math.round(zoomStates[diagramId].scale * 100) + '%';
+            }
+        }
+        
+        // Fullscreen toggle
+        function toggleFullscreen(diagramId) {
+            const container = document.getElementById(diagramId);
+            if (container) {
+                container.classList.toggle('fullscreen');
+                if (container.classList.contains('fullscreen')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+        
+        // Pan functionality
+        document.querySelectorAll('.diagram-wrapper').forEach(wrapper => {
+            let isDragging = false;
+            let startX, startY;
+            const diagramId = wrapper.id.replace('wrapper-', '');
+            
+            wrapper.addEventListener('mousedown', (e) => {
+                if (!zoomStates[diagramId]) return;
+                isDragging = true;
+                startX = e.clientX - zoomStates[diagramId].translateX;
+                startY = e.clientY - zoomStates[diagramId].translateY;
+                wrapper.style.cursor = 'grabbing';
+            });
+            
+            wrapper.addEventListener('mousemove', (e) => {
+                if (!isDragging || !zoomStates[diagramId]) return;
+                e.preventDefault();
+                zoomStates[diagramId].translateX = e.clientX - startX;
+                zoomStates[diagramId].translateY = e.clientY - startY;
+                applyTransform(diagramId);
+            });
+            
+            wrapper.addEventListener('mouseup', () => {
+                isDragging = false;
+                wrapper.style.cursor = 'grab';
+            });
+            
+            wrapper.addEventListener('mouseleave', () => {
+                isDragging = false;
+                wrapper.style.cursor = 'grab';
+            });
+            
+            // Mouse wheel zoom
+            wrapper.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                zoomDiagram(diagramId, delta);
+            });
+        });
+        
+        // Toggle card expansion
+        function toggleCard(card) {
+            const wasExpanded = card.classList.contains('expanded');
+            
+            // Collapse all cards first
+            document.querySelectorAll('.feature-card').forEach(c => {
+                c.classList.remove('expanded');
+            });
+            
+            // Expand clicked card if it wasn't already expanded
+            if (!wasExpanded) {
+                card.classList.add('expanded');
+            }
+        }
+        
+        // Toggle collapsible sections
+        function toggleCollapsible(header) {
+            header.classList.toggle('open');
+            const content = header.nextElementSibling;
+            content.classList.toggle('open');
+        }
+        
+        // Highlight cards based on legend click
+        function highlightCards(tab) {
+            // Toggle legend active state
+            document.querySelectorAll('.legend-item').forEach(item => {
+                if (item.dataset.tab === tab) {
+                    item.classList.toggle('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Highlight matching card
+            document.querySelectorAll('.feature-card').forEach(card => {
+                if (card.dataset.card === tab) {
+                    card.style.animation = 'pulse 0.5s ease-in-out 3';
+                    setTimeout(() => {
+                        card.style.animation = '';
+                    }, 1500);
+                    
+                    // Expand the card
+                    card.classList.add('expanded');
+                    
+                    // Scroll to card
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+        
+        // Modal functions
+        function showModal(type) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+            
+            if (type === 'admin') {
+                title.textContent = '🔑 Admin Role Permissions';
+                body.innerHTML = `
+                    <ul>
+                        <li>Full access to User Journey Customization</li>
+                        <li>Create, edit, and delete User Journeys</li>
+                        <li>Create, edit, and delete Leaderboard Banners</li>
+                        <li>Access to Recycle Bin</li>
+                        <li>View all campaign analytics</li>
+                        <li>Manage campaign categories</li>
+                        <li>Access to all dashboard features</li>
+                        <li>User management capabilities</li>
+                    </ul>
+                `;
+            } else if (type === 'marketing') {
+                title.textContent = '📊 Marketing Role Permissions';
+                body.innerHTML = `
+                    <ul>
+                        <li>Access to User Journey Customization</li>
+                        <li>Create and edit User Journeys</li>
+                        <li>Create and edit Leaderboard Banners</li>
+                        <li>View campaign performance</li>
+                        <li>Access to campaign reporting</li>
+                        <li>Limited administrative functions</li>
+                    </ul>
+                `;
+            }
+            
+            modal.classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+        
+        // Close modal on overlay click
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') {
+                closeModal();
+            }
+        });
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                // Exit fullscreen
+                document.querySelectorAll('.diagram-container.fullscreen').forEach(container => {
+                    container.classList.remove('fullscreen');
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Expand first card by default after page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const firstCard = document.querySelector('.feature-card');
+                if (firstCard) {
+                    firstCard.classList.add('expanded');
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
