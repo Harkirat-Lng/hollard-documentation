@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Flows - Hollard Money Documentation</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #0075c9 0%, #004d84 100%);
+            color: white;
+            padding: 45px 40px;
+        }
+        .hero-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .hero h1 { font-size: 2.2em; font-weight: 300; }
+        .hero h1 span { font-weight: 700; }
+        .hero p { opacity: 0.9; margin-top: 6px; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            transition: background 0.2s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.28); }
+
+        /* Layout */
+        .layout {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 35px;
+            align-items: start;
+        }
+        @media (max-width: 950px) {
+            .layout { grid-template-columns: 1fr; }
+        }
+
+        /* Search */
+        .search-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .search-panel h2 {
+            color: #0075c9;
+            font-size: 1.5em;
+            margin-bottom: 6px;
+        }
+        .search-panel .subtitle { color: #777; font-size: 0.92em; margin-bottom: 20px; }
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 15px 18px 15px 48px;
+            font-size: 1.05em;
+            border: 2px solid #e3e8ee;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box input:focus { border-color: #0075c9; }
+        .search-box .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1em;
+            opacity: 0.55;
+        }
+        .search-hint { font-size: 0.82em; color: #999; margin-top: 10px; }
+
+        /* Results */
+        .results { margin-top: 25px; }
+        .results-meta {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .doc-result {
+            border: 1px solid #eef1f4;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        .doc-result:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); border-color: #d5e6f5; }
+        .doc-result-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+        .doc-icon {
+            width: 40px; height: 40px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #0075c9, #004d84);
+            color: white;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2em;
+        }
+        .doc-result-head h3 { font-size: 1.15em; color: #004d84; }
+        .doc-filename {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.8em;
+            color: #999;
+        }
+        .doc-desc { color: #666; font-size: 0.92em; margin: 8px 0 14px; }
+        .flow-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+        .flow-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #f0f6fc;
+            color: #0075c9;
+            border: 1px solid #d5e6f5;
+            border-radius: 20px;
+            padding: 7px 15px;
+            font-size: 0.86em;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+        .flow-chip:hover { background: #0075c9; color: white; border-color: #0075c9; }
+        .flow-chip .chip-icon { font-size: 0.95em; }
+        mark { background: #fff3b0; color: inherit; padding: 0 1px; border-radius: 2px; }
+
+        .no-results {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+        .no-results .big { font-size: 2.5em; margin-bottom: 10px; }
+
+        /* Top flows sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 28px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 30px;
+        }
+        .sidebar h2 {
+            color: #0075c9;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+        .sidebar .subtitle { color: #888; font-size: 0.85em; margin-bottom: 20px; }
+        .top-flow {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.18s;
+            border: 1px solid transparent;
+        }
+        .top-flow:hover { background: #f0f6fc; border-color: #d5e6f5; }
+        .rank {
+            width: 30px; height: 30px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: #eef4fa;
+            color: #0075c9;
+            font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9em;
+        }
+        .top-flow:nth-child(1) .rank { background: linear-gradient(135deg,#f6c453,#e0a800); color:#5c4400; }
+        .top-flow-info { flex: 1; min-width: 0; }
+        .top-flow-info .tf-title {
+            font-size: 0.92em;
+            font-weight: 600;
+            color: #2c3e50;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .top-flow-info .tf-meta { font-size: 0.76em; color: #999; }
+        .search-count {
+            font-size: 0.72em;
+            color: #0075c9;
+            background: #eef4fa;
+            padding: 3px 9px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        /* Flow viewer modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,25,40,0.75);
+            z-index: 1000;
+            padding: 30px;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 1150px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 20px 28px;
+            border-bottom: 1px solid #eef1f4;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .modal-header h3 { color: #004d84; font-size: 1.25em; }
+        .modal-header .mh-doc {
+            font-size: 0.8em;
+            color: #999;
+            font-family: 'Consolas', monospace;
+        }
+        .modal-close {
+            border: none;
+            background: #f0f2f5;
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            font-size: 1.3em;
+            cursor: pointer;
+            color: #555;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .modal-close:hover { background: #e2545c; color: white; }
+
+        .viewer-wrap {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle, #e8edf2 1px, transparent 1px);
+            background-size: 22px 22px;
+            background-color: #fafbfc;
+            cursor: grab;
+        }
+        .viewer-wrap.grabbing { cursor: grabbing; }
+        .viewer-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            transform-origin: 0 0;
+            padding: 30px;
+            transition: transform 0.05s linear;
+        }
+        .viewer-canvas svg { max-width: none !important; height: auto !important; }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: white;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.15);
+        }
+        .zoom-controls button {
+            width: 42px; height: 42px;
+            border: none;
+            background: #f4f6f9;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #0075c9;
+            transition: background 0.18s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .zoom-controls button:hover { background: #0075c9; color: white; }
+        .zoom-level {
+            text-align: center;
+            font-size: 0.72em;
+            color: #888;
+            padding: 2px 0;
+        }
+        .viewer-hint {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            color: #777;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            pointer-events: none;
+        }
+
+        footer {
+            background: #1a1a2e;
+            color: rgba(255,255,255,0.7);
+            padding: 30px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-inner">
+            <div>
+                <h1>Process <span>Flows</span></h1>
+                <p>Search the documentation library and explore interactive, zoomable flow charts.</p>
+            </div>
+            <a href="index.html#documentation-resources" class="back-link">← Back to Documentation Home</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <!-- Search + results -->
+        <main class="search-panel">
+            <h2>Search Documentation</h2>
+            <p class="subtitle">Find docs and their flow charts by matching a keyword against the file name.</p>
+
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" aria-label="Search documentation by file-name keyword" placeholder="Search the docs folder — e.g. 'restricted', 'user', 'security'…" autocomplete="off" autofocus>
+            </div>
+            <p class="search-hint">Tip: the search matches the keyword against document file names in <code>docs/</code>. Click a flow to open its zoomable chart.</p>
+
+            <div class="results" id="results"></div>
+        </main>
+
+        <!-- Top 5 most-searched flows -->
+        <aside class="sidebar">
+            <h2>🔥 Top 5 Flows</h2>
+            <p class="subtitle">The most-searched flow charts across the docs.</p>
+            <div id="topFlows"></div>
+        </aside>
+    </div>
+
+    <!-- Zoomable flow viewer -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalTitle">Flow</h3>
+                    <span class="mh-doc" id="modalDoc"></span>
+                </div>
+                <button class="modal-close" id="modalClose" title="Close">×</button>
+            </div>
+            <div class="viewer-wrap" id="viewerWrap">
+                <div class="viewer-hint">Scroll to zoom • Drag to pan</div>
+                <div class="viewer-canvas" id="viewerCanvas"></div>
+                <div class="zoom-controls">
+                    <button id="zoomIn" title="Zoom in">+</button>
+                    <div class="zoom-level" id="zoomLevel">100%</div>
+                    <button id="zoomOut" title="Zoom out">−</button>
+                    <button id="zoomReset" title="Reset view">⤢</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>Hollard Money</strong> — Platform Documentation</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js" integrity="sha384-WmdflGW9aGfoBdHc4rRyWzYuAjEmDwMdGdiPNacbwfGKxBW/SO6guzuQ76qjnSlr" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+    /* =========================================================================
+       DOCUMENTATION REGISTRY
+       One entry per file in the docs/ folder. Each flow carries the mermaid
+       definition rendered inside the zoomable viewer. To add a new doc, append
+       an object here — search + top-flows update automatically.
+    ========================================================================== */
+    const DOCS = [
+        {
+            file: "RestrictedUser.md",
+            title: "Restricted User — Hollard API",
+            description: "How and where the platform refuses to verify a user (HTTP 501), driven by four config keys.",
+            keywords: ["restricted", "user", "verification", "bureau", "security", "questions", "fraud", "501"],
+            flows: [
+                {
+                    id: "restricted-user",
+                    title: "Restricted User Verification (Registration → Security Questions)",
+                    keywords: ["restricted", "user", "bureau", "registration", "verification", "basic info", "security", "questions", "answers", "id number", "fraud", "501"],
+                    definition: `flowchart TD
+    A["POST User/ValidateUserBasicInfoWithBureauForHollard"] --> B["Bureau basic-info lookup<br/>BasicInfoBureauServiceV2"]
+    B --> C{"Surname AND Fullname AND Number<br/>all match at bureau?"}
+    C -->|Yes| V["IsVerify = true<br/>IsRestrictedUser = false"]
+    C -->|No| D["UserVerificationCheck"]
+    D --> E{"Config RestrictUnverifiedUsers = true?<br/>currently true"}
+    E -->|Yes| F{"Bureau response JsonString is null?"}
+    F -->|Yes| R1["RESTRICTED<br/>NoBasicInfoLogForUserInDatabase"]
+    F -->|No| G{"JsonString empty OR contains<br/>'no information found'?"}
+    G -->|Yes| R2["RESTRICTED<br/>NullResponseFromBureau /<br/>NoInformationFoundAtBureau"]
+    G -->|No| H
+    E -->|No| H{"User surname in RestrictedSurname list?<br/>config: BEKKER, ROBERTSON"}
+    H -->|Yes| R3["RESTRICTED<br/>RestrictedSurname"]
+    H -->|No| SQ["Not restricted at bureau — IsVerify = false<br/>Proceeds to security questions<br/>GetSecurityQuestionsPart1 / Part2"]
+    SQ --> P{"ID number starts with prefix in<br/>RestrictedIdNumberPrefix range?<br/>config: 30-45, i.e. born 1930-1945"}
+    P -->|No| OK["Not restricted — questions returned"]
+    P -->|Yes| Q["Count correct answers that start with<br/>'i do not' or 'i am not'"]
+    Q --> S{"count &ge; RestrictedAnswersCount?<br/>config: 4"}
+    S -->|Yes| R4["RESTRICTED — HTTP 501<br/>'We couldn't verify you.<br/>Please call us if you need help.'"]
+    S -->|No| OK
+
+    style R1 fill:#f8d7da,stroke:#d9534f,color:#000
+    style R2 fill:#f8d7da,stroke:#d9534f,color:#000
+    style R3 fill:#f8d7da,stroke:#d9534f,color:#000
+    style R4 fill:#f8d7da,stroke:#d9534f,color:#000
+    style V fill:#d4edda,stroke:#28a745,color:#000
+    style OK fill:#d4edda,stroke:#28a745,color:#000
+    style SQ fill:#fff3cd,stroke:#e0a800,color:#000`
+                }
+            ]
+        }
+    ];
+
+    /* Flat index of every flow, with a back-reference to its parent doc. */
+    const ALL_FLOWS = [];
+    DOCS.forEach(doc => (doc.flows || []).forEach(flow => {
+        ALL_FLOWS.push({ ...flow, docFile: doc.file, docTitle: doc.title });
+    }));
+
+    /* =========================================================================
+       SEARCH-COUNT STORE  (persisted, drives the "most searched" ranking)
+    ========================================================================== */
+    const STORE_KEY = "hollard.flowSearchCounts.v1";
+    function loadCounts() {
+        try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+        catch (e) { return {}; }
+    }
+    function saveCounts(c) {
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(c)); } catch (e) {}
+    }
+    let counts = loadCounts();
+    function bumpCount(flowId) {
+        counts[flowId] = (counts[flowId] || 0) + 1;
+        saveCounts(counts);
+        renderTopFlows();
+    }
+
+    /* =========================================================================
+       MERMAID
+    ========================================================================== */
+    mermaid.initialize({ startOnLoad: false, theme: "default", securityLevel: "loose", flowchart: { htmlLabels: true } });
+    let renderSeq = 0;
+
+    /* =========================================================================
+       SEARCH + RESULTS
+    ========================================================================== */
+    const searchInput = document.getElementById("searchInput");
+    const resultsEl = document.getElementById("results");
+
+    function escapeHtml(s) {
+        return s.replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+    }
+    function highlight(text, term) {
+        const safe = escapeHtml(text);
+        if (!term) return safe;
+        const re = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig");
+        return safe.replace(re, "<mark>$1</mark>");
+    }
+
+    /* Primary match = keyword in the file name. Keywords/title used as a fallback. */
+    function matchesDoc(doc, term) {
+        const t = term.toLowerCase();
+        return doc.file.toLowerCase().includes(t)
+            || doc.title.toLowerCase().includes(t)
+            || (doc.keywords || []).some(k => k.toLowerCase().includes(t));
+    }
+
+    function renderResults(term) {
+        term = term.trim();
+        const matched = !term ? DOCS : DOCS.filter(d => matchesDoc(d, term));
+
+        if (!matched.length) {
+            resultsEl.innerHTML =
+                '<div class="no-results"><div class="big">🗂️</div>' +
+                '<p>No documents match “' + escapeHtml(term) + '”.</p>' +
+                '<p style="font-size:0.85em;margin-top:6px;">Try a keyword from a file name in the docs folder.</p></div>';
+            return;
+        }
+
+        const label = term
+            ? matched.length + ' document' + (matched.length > 1 ? 's' : '') + ' matching “' + escapeHtml(term) + '”'
+            : 'All documentation (' + matched.length + ')';
+
+        let html = '<div class="results-meta">' + label + '</div>';
+        matched.forEach(doc => {
+            html += '<div class="doc-result">'
+                + '<div class="doc-result-head">'
+                + '<div class="doc-icon">📄</div>'
+                + '<div><h3>' + highlight(doc.title, term) + '</h3>'
+                + '<span class="doc-filename">docs/' + highlight(doc.file, term) + '</span></div>'
+                + '</div>'
+                + '<p class="doc-desc">' + escapeHtml(doc.description || "") + '</p>'
+                + '<div class="flow-chips">';
+            (doc.flows || []).forEach(flow => {
+                html += '<span class="flow-chip" data-flow="' + flow.id + '">'
+                    + '<span class="chip-icon">📊</span>' + escapeHtml(flow.title) + '</span>';
+            });
+            html += '</div></div>';
+        });
+        resultsEl.innerHTML = html;
+
+        resultsEl.querySelectorAll(".flow-chip").forEach(chip => {
+            chip.addEventListener("click", () => openFlow(chip.dataset.flow, true));
+        });
+    }
+
+    let debounceTimer;
+    searchInput.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+        const term = searchInput.value;
+        debounceTimer = setTimeout(() => renderResults(term), 120);
+    });
+
+    /* =========================================================================
+       TOP 5 MOST-SEARCHED FLOWS
+    ========================================================================== */
+    const topFlowsEl = document.getElementById("topFlows");
+    function renderTopFlows() {
+        const ranked = [...ALL_FLOWS].sort((a, b) => {
+            const diff = (counts[b.id] || 0) - (counts[a.id] || 0);
+            return diff !== 0 ? diff : a.title.localeCompare(b.title);
+        }).slice(0, 5);
+
+        if (!ranked.length) {
+            topFlowsEl.innerHTML = '<p style="color:#aaa;font-size:0.88em;">No flows available yet.</p>';
+            return;
+        }
+
+        topFlowsEl.innerHTML = ranked.map((flow, i) => {
+            const n = counts[flow.id] || 0;
+            const countLabel = n > 0 ? n + (n === 1 ? ' search' : ' searches') : 'new';
+            return '<div class="top-flow" data-flow="' + flow.id + '">'
+                + '<div class="rank">' + (i + 1) + '</div>'
+                + '<div class="top-flow-info">'
+                + '<div class="tf-title">' + escapeHtml(flow.title) + '</div>'
+                + '<div class="tf-meta">docs/' + escapeHtml(flow.docFile) + '</div>'
+                + '</div>'
+                + '<span class="search-count">' + countLabel + '</span>'
+                + '</div>';
+        }).join("");
+
+        topFlowsEl.querySelectorAll(".top-flow").forEach(row => {
+            row.addEventListener("click", () => openFlow(row.dataset.flow, true));
+        });
+    }
+
+    /* =========================================================================
+       ZOOMABLE FLOW VIEWER
+    ========================================================================== */
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDoc = document.getElementById("modalDoc");
+    const viewerWrap = document.getElementById("viewerWrap");
+    const viewerCanvas = document.getElementById("viewerCanvas");
+    const zoomLevelEl = document.getElementById("zoomLevel");
+
+    let scale = 1, tx = 0, ty = 0;
+    const MIN_SCALE = 0.2, MAX_SCALE = 5;
+
+    function applyTransform() {
+        viewerCanvas.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + scale + ")";
+        zoomLevelEl.textContent = Math.round(scale * 100) + "%";
+    }
+    function resetView() {
+        scale = 1; tx = 0; ty = 0;
+        // Center the diagram in the viewport.
+        const svg = viewerCanvas.querySelector("svg");
+        if (svg) {
+            const wrapRect = viewerWrap.getBoundingClientRect();
+            tx = Math.max(20, (wrapRect.width - viewerCanvas.offsetWidth) / 2);
+            ty = Math.max(20, (wrapRect.height - viewerCanvas.offsetHeight) / 2);
+        }
+        applyTransform();
+    }
+
+    async function openFlow(flowId, bump) {
+        const flow = ALL_FLOWS.find(f => f.id === flowId);
+        if (!flow) return;
+        if (bump) bumpCount(flowId);
+
+        modalTitle.textContent = flow.title;
+        modalDoc.textContent = "docs/" + flow.docFile;
+        viewerCanvas.innerHTML = '<p style="color:#999;padding:20px;">Rendering…</p>';
+        modal.classList.add("open");
+        document.body.style.overflow = "hidden";
+
+        try {
+            const id = "flow-svg-" + (++renderSeq);
+            const { svg } = await mermaid.render(id, flow.definition);
+            viewerCanvas.innerHTML = svg;
+            // Let layout settle before centering.
+            requestAnimationFrame(resetView);
+        } catch (e) {
+            viewerCanvas.innerHTML = '<p style="color:#c0392b;padding:20px;">Could not render this flow chart.<br>' + escapeHtml(String(e)) + '</p>';
+        }
+    }
+
+    function closeModal() {
+        modal.classList.remove("open");
+        document.body.style.overflow = "";
+        viewerCanvas.innerHTML = "";
+    }
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
+
+    /* Zoom buttons */
+    function zoomBy(factor) {
+        const wrapRect = viewerWrap.getBoundingClientRect();
+        zoomAt(wrapRect.width / 2, wrapRect.height / 2, factor);
+    }
+    function zoomAt(px, py, factor) {
+        const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale * factor));
+        const ratio = newScale / scale;
+        // Keep the point under the cursor fixed.
+        tx = px - ratio * (px - tx);
+        ty = py - ratio * (py - ty);
+        scale = newScale;
+        applyTransform();
+    }
+    document.getElementById("zoomIn").addEventListener("click", () => zoomBy(1.25));
+    document.getElementById("zoomOut").addEventListener("click", () => zoomBy(0.8));
+    document.getElementById("zoomReset").addEventListener("click", resetView);
+
+    /* Wheel zoom */
+    viewerWrap.addEventListener("wheel", e => {
+        e.preventDefault();
+        const rect = viewerWrap.getBoundingClientRect();
+        const factor = e.deltaY < 0 ? 1.12 : 0.89;
+        zoomAt(e.clientX - rect.left, e.clientY - rect.top, factor);
+    }, { passive: false });
+
+    /* Drag to pan */
+    let dragging = false, startX = 0, startY = 0, startTx = 0, startTy = 0;
+    viewerWrap.addEventListener("pointerdown", e => {
+        dragging = true;
+        viewerWrap.classList.add("grabbing");
+        startX = e.clientX; startY = e.clientY;
+        startTx = tx; startTy = ty;
+        viewerWrap.setPointerCapture(e.pointerId);
+    });
+    viewerWrap.addEventListener("pointermove", e => {
+        if (!dragging) return;
+        tx = startTx + (e.clientX - startX);
+        ty = startTy + (e.clientY - startY);
+        applyTransform();
+    });
+    function endDrag(e) {
+        if (!dragging) return;
+        dragging = false;
+        viewerWrap.classList.remove("grabbing");
+        try { viewerWrap.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+    viewerWrap.addEventListener("pointerup", endDrag);
+    viewerWrap.addEventListener("pointercancel", endDrag);
+
+    /* =========================================================================
+       BOOT — support ?flow=<id> deep links (used by index.html anchors)
+    ========================================================================== */
+    renderResults("");
+    renderTopFlows();
+
+    const params = new URLSearchParams(location.search);
+    const deep = params.get("flow");
+    if (deep && ALL_FLOWS.some(f => f.id === deep)) {
+        openFlow(deep, false);
+    }
+    </script>
+</body>
+</html>
